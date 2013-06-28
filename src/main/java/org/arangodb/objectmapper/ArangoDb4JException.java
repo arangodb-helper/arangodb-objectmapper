@@ -38,7 +38,7 @@ public class ArangoDb4JException extends Exception {
 	/**
 	 * Constructor
 	 * 
-	 * @param T       Throwable
+	 * @param t       Throwable
      */
 
 	public ArangoDb4JException(Throwable t) {
@@ -48,7 +48,7 @@ public class ArangoDb4JException extends Exception {
 	/**
 	 * Constructor
 	 * 
-	 * @param mesage       error message
+	 * @param message       error message
      */
 
     public ArangoDb4JException(String message) {
@@ -60,7 +60,7 @@ public class ArangoDb4JException extends Exception {
 	/**
 	 * Constructor
 	 * 
-	 * @param mesage       error message
+	 * @param message      error message
 	 * @param statusCode   http status error code (> 299)
 	 * @param errorNum     ArangoDB error number
      */
