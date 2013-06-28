@@ -5,7 +5,8 @@ arangodb object mapper
 
 [![Build Status](https://secure.travis-ci.org/triAGENS/arangodb-object-mapper.png)](http://travis-ci.org/triAGENS/arangodb-object-mapper)
 
-A simple object mapper to store java objects into a ArangoDB database. 
+A simple object mapper (based on [Jackson](http://wiki.fasterxml.com/JacksonHome)) to store java objects into a ArangoDB database.
+
 
 Installation & Testing
 =======================
