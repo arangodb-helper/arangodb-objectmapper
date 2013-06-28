@@ -56,6 +56,16 @@ class PointRepository extends ArangoDbRepository<Point> {
     }
 ```
 
+Create database connection and repository
+```
+ArangoDbHttpClient client = new ArangoDbHttpClient.Builder().host("localhost")
+                                                            .port(8529)
+                                                            .build();        
+Database database = new Database(client);
+
+PointRepository repo = new PointRepository(database);
+```
+
 Save a object
 ```
 Point p = new Point(1, 2);        
