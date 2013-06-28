@@ -38,6 +38,6 @@ public class Point extends ArangoDbDocument {
 	}
 	
 	public String toString() {
-		return "point: " + x + "x" + y;
+		return "[point@" + getKey() + ":" + x + "x" + y + "]";
 	}
 }

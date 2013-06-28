@@ -26,8 +26,8 @@ public class RepositoryTest extends BaseTestCase {
 			
 			ArrayList<String> fields = new ArrayList<String>();
 			fields.add("x");
+			//fields.add("y");
 			//fields.add("z");
-			fields.add("y");
 			
 			index.setFields(fields);
 			
