@@ -1,0 +1,11 @@
+language: java
+
+before_script:
+  - chmod 777 ./tests/travis/setup_arangodb.sh
+  - ./tests/travis/setup_arangodb.sh
+
+jdk:
+  - oraclejdk7
+  - openjdk7
+  - openjdk6
+
