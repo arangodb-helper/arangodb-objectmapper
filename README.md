@@ -81,7 +81,7 @@ Update the object
 ```
 p.setX(5);        
 try {
-    repo.save(p);
+    repo.update(p);
 } catch (ArangoDb4JException e) {
     ...
 }
