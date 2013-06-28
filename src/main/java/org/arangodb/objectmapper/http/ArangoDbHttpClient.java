@@ -212,7 +212,7 @@ public class ArangoDbHttpClient {
 		 * Will set host, port and possible enables SSL based on the properties if the supplied URL.
 		 * This method overrides the properties: host, port and enableSSL. 
 		 * @param url
-		 * @return
+		 * @return the builder
 		 */
 		public Builder url(URL url){
 			this.host = url.getHost();
@@ -270,7 +270,7 @@ public class ArangoDbHttpClient {
 		 * Controls if the http client should cache response entities.
 		 * Default is true.
 		 * @param b
-		 * @return
+		 * @return the builder
 		 */
 		public Builder caching(boolean b) {
 			caching = b;
@@ -414,7 +414,7 @@ public class ArangoDbHttpClient {
 		 * connections every 30 seconds.
 		 * 
 		 * @param b
-		 * @return
+		 * @return the builder
 		 */
 		public Builder cleanupIdleConnections(boolean b) {
 			cleanupIdleConnections = b;
@@ -427,7 +427,7 @@ public class ArangoDbHttpClient {
 		 * are ignored.
 		 * 
 		 * @param cm
-		 * @return
+		 * @return the builder
 		 */
 		public Builder connectionManager(ClientConnectionManager cm) {
 			conman = cm;
@@ -438,8 +438,8 @@ public class ArangoDbHttpClient {
 		 * Set to true in order to enable SSL sockets. Note that the CouchDB
 		 * host must be accessible through a https:// path Default is false.
 		 * 
-		 * @param s
-		 * @return
+		 * @param b
+		 * @return the builder
 		 */
 		public Builder enableSSL(boolean b) {
 			enableSSL = b;
@@ -452,7 +452,7 @@ public class ArangoDbHttpClient {
 		 * relaxedSSLSettings.
 		 * 
 		 * @param f
-		 * @return
+		 * @return the builder
 		 */
 		public Builder sslSocketFactory(SSLSocketFactory f) {
 			sslSocketFactory = f;
@@ -464,7 +464,7 @@ public class ArangoDbHttpClient {
 		 * might be handy during development. default is false.
 		 * 
 		 * @param b
-		 * @return
+		 * @return the builder
 		 */
 		public Builder relaxedSSLSettings(boolean b) {
 			relaxedSSLSettings = b;
@@ -477,7 +477,7 @@ public class ArangoDbHttpClient {
 		 * body. Enabled by default.
 		 * 
 		 * @param b
-		 * @return
+		 * @return the builder
 		 */
 		public Builder useExpectContinue(boolean b) {
 			useExpectContinue = b;

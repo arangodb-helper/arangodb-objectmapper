@@ -36,7 +36,7 @@ public class ArangoDbRepository<T extends ArangoDbDocument> {
      * Constructor
      *
      * @param database     the ArangoDB database
-     * @param query        the query 
+     * @param valueType    the class 
      */
 
 	public ArangoDbRepository (Database database, Class<T> valueType) {

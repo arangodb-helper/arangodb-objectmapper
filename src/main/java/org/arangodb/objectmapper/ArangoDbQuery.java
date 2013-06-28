@@ -65,7 +65,7 @@ public class ArangoDbQuery<T extends ArangoDbDocument> {
      * @param key         the key
      * @param value       the value
      * 
-     * @returns ArangoDbQuery          the query
+     * @return ArangoDbQuery<T>          the query
      */
 
     public ArangoDbQuery<T> has(final String key, final Object value) {
@@ -80,7 +80,7 @@ public class ArangoDbQuery<T extends ArangoDbDocument> {
      * @param value       the value
      * @param compare     a compare function
      * 
-     * @returns ArangoDbQuery          the query
+     * @return ArangoDbQuery<T>          the query
      */
 
     public <S extends Comparable<S>> ArangoDbQuery<T> has(final String key, final S value, final Compare compare) {
@@ -114,7 +114,7 @@ public class ArangoDbQuery<T extends ArangoDbDocument> {
      * @param startValue  the start value
      * @param endValue    the end value
      * 
-     * @returns ArangoDbQuery          the query
+     * @return ArangoDbQuery<T>          the query
      */
 
     public <S extends Comparable<S>> ArangoDbQuery<T> interval(final String key, final S startValue, final S endValue) {
@@ -127,9 +127,9 @@ public class ArangoDbQuery<T extends ArangoDbDocument> {
     /**
      * Limit the number of results
      * 
-     * @param key         the key
+     * @param max         the maximum number of results
      * 
-     * @returns  ArangoDbQuery         the query
+     * @return  ArangoDbQuery<T>         the query
      */
 
     public ArangoDbQuery<T> limit(final long max) {
@@ -140,7 +140,7 @@ public class ArangoDbQuery<T extends ArangoDbDocument> {
     /**
      * Get the AQL query as a map
      * 
-     * @returns Map<String, Object>  the map
+     * @return Map<String, Object>  the map
      */
 
     public Map<String, Object> getAsMap() {
@@ -161,7 +161,7 @@ public class ArangoDbQuery<T extends ArangoDbDocument> {
     /**
      * Executes the query and returns a cursor (Iterator)
      * 
-     * @returns Cursor<T>  the result iterator
+     * @return Cursor<T>  the result iterator
      */
     
     public Cursor<T> execute() {
@@ -171,7 +171,7 @@ public class ArangoDbQuery<T extends ArangoDbDocument> {
     /**
      * Returns the class type
      * 
-     * @returns Class<T>  the class type
+     * @return Class<T>  the class type
      */
     
     public Class<T> getValueType() {
