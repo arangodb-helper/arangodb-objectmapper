@@ -1,4 +1,6 @@
-R="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+#!/bin/bash
+
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 cd $DIR
 
 VERSION=1.4.0
@@ -17,7 +19,7 @@ PID=$(echo $PPID)
 TMP_DIR="/tmp/arangodb.$PID"
 PID_FILE="/tmp/arangodb.$PID.pid"
 ARANGODB_DIR="$DIR/$NAME"
-ARANGOD="${ARANGODB_DIR}/bin/arangod"
+ARANGOD="${ARANGODB_DIR}/bin/arangod_x86_64"
 
 # create database directory
 mkdir ${TMP_DIR}
