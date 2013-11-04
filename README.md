@@ -61,8 +61,10 @@ Create database connection and repository
 ```
 ArangoDbHttpClient client = new ArangoDbHttpClient.Builder().host("localhost")
                                                             .port(8529)
-                                                            .build();        
-Database database = new Database(client);
+                                                            .build();       
+
+/* use "_system" database. can use any other database if required */
+Database database = new Database(client, "_system");
 
 PointRepository repo = new PointRepository(database);
 ```
