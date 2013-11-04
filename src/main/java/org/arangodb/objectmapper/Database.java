@@ -34,6 +34,18 @@ public class Database {
 	 */
 
 	private final JsonSerializer serializer;
+        
+        /**
+	 * Database name
+	 */
+
+        private String name;
+	
+        /**
+	 * Database prefix
+	 */
+
+	public final static String DB_PREFIX = "/_db/";
 
 	/**
 	 * Path to document api
@@ -64,12 +76,43 @@ public class Database {
 	 * 
 	 * @param client
 	 *            a http client connection
+         *
+	 * @param name
+	 *            database name
+	 */
+
+	public Database(ArangoDbHttpClient client, String name) {
+		this.rest = new RestHandler(client);
+		this.serializer = new JsonSerializer();
+                this.name = name;
+	}
+
+	/**
+	 * Create database
+	 * 
+	 * @param client
+	 *            a http client connection
 	 */
 
 	public Database(ArangoDbHttpClient client) {
-		this.rest = new RestHandler(client);
-		this.serializer = new JsonSerializer();
+                this(client, "");
 	}
+	
+        /**
+	 * Build a database-specific path
+	 * 
+	 * @param relPath the path without the database name
+         *
+	 * @return String The database-specific path
+	 */
+
+        public String buildPath(String relPath) {
+                if (this.name == "") {
+                        return relPath;
+                }
+
+                return DB_PREFIX + this.name + relPath;
+        }
 
 	/**
 	 * Request the version of ArangoDB
@@ -81,7 +124,7 @@ public class Database {
 	 */
 
 	public Version getVersion() throws ArangoDb4JException {
-		return rest.get(VERSION_PATH, new ResponseCallback<Version>() {
+		return rest.get(buildPath(VERSION_PATH), new ResponseCallback<Version>() {
 			@Override
 			public Version success(ArangoDbHttpResponse hr)
 					throws ArangoDb4JException {
@@ -119,7 +162,7 @@ public class Database {
 		String path = DOCUMENT_PATH + "?createCollection=true&collection="
 				+ collection;
 
-		RevisionResponse resp = rest.post(path, serializer.toJson(o),
+		RevisionResponse resp = rest.post(buildPath(path), serializer.toJson(o),
 				new ResponseCallback<RevisionResponse>() {
 					@Override
 					public RevisionResponse success(ArangoDbHttpResponse hr)
@@ -156,7 +199,7 @@ public class Database {
 		String collection = getCollectionName(c);
 		String path = DOCUMENT_PATH + collection + "/" + key;
 
-		return rest.get(path, new ResponseCallback<T>() {
+		return rest.get(buildPath(path), new ResponseCallback<T>() {
 			@Override
 			public T success(ArangoDbHttpResponse hr)
 					throws ArangoDb4JException {
@@ -211,7 +254,7 @@ public class Database {
 
 		// TODO: add revision check
 		
-		RevisionResponse resp = rest.patch(path, serializer.toJson(o),
+		RevisionResponse resp = rest.patch(buildPath(path), serializer.toJson(o),
 				new ResponseCallback<RevisionResponse>() {
 					@Override
 					public RevisionResponse success(ArangoDbHttpResponse hr)
@@ -251,7 +294,7 @@ public class Database {
 
 		// TODO: add revision check
 		
-		RevisionResponse resp = rest.put(path, serializer.toJson(o),
+		RevisionResponse resp = rest.put(buildPath(path), serializer.toJson(o),
 				new ResponseCallback<RevisionResponse>() {
 					@Override
 					public RevisionResponse success(ArangoDbHttpResponse hr)
@@ -289,7 +332,7 @@ public class Database {
 
 		// TODO: add revision check
 		
-		rest.delete(path,
+		rest.delete(buildPath(path),
 				new ResponseCallback<RevisionResponse>() {
 					@Override
 					public RevisionResponse success(ArangoDbHttpResponse hr)
@@ -342,7 +385,7 @@ public class Database {
 		
 		String path = INDEX_PATH + "?collection=" + coll.getName();
 		
-		JsonNode root = rest.post(path, serializer.toJson(index.getAsMap()),
+		JsonNode root = rest.post(buildPath(path), serializer.toJson(index.getAsMap()),
 				new ResponseCallback<JsonNode>() {
 					@Override
 					public JsonNode success(ArangoDbHttpResponse hr)
@@ -367,7 +410,7 @@ public class Database {
 		
 		String path = INDEX_PATH + "/" + index.getId();
 		
-		JsonNode root = rest.get(path,
+		JsonNode root = rest.get(buildPath(path),
 				new ResponseCallback<JsonNode>() {
 					@Override
 					public JsonNode success(ArangoDbHttpResponse hr)
@@ -394,7 +437,7 @@ public class Database {
 		
 		String path = INDEX_PATH + "?collection=" + coll.getName();
 		
-		JsonNode root = rest.get(path,
+		JsonNode root = rest.get(buildPath(path),
 				new ResponseCallback<JsonNode>() {
 					@Override
 					public JsonNode success(ArangoDbHttpResponse hr)
@@ -415,7 +458,7 @@ public class Database {
 	public void deleteIndex (Index index)  throws ArangoDb4JException {
 		ArangoDbAssert.notNull(index, "given index is null");
 		String path = INDEX_PATH + "/" + index.getId();		
-		rest.delete(path);
+		rest.delete(buildPath(path));
 	}
 	
 	// /////////////////////////////////////////////////////////////////////////
@@ -433,7 +476,7 @@ public class Database {
 	public Collection createCollection (Collection coll)  throws ArangoDb4JException {
 		ArangoDbAssert.notNull(coll, "given collection is null");
 		
-		rest.post(COLLECTION_PATH, serializer.toJson(coll.getAsMap()),
+		rest.post(buildPath(COLLECTION_PATH), serializer.toJson(coll.getAsMap()),
 				new ResponseCallback<Integer>() {
 					@Override
 					public Integer success(ArangoDbHttpResponse hr)
@@ -444,7 +487,7 @@ public class Database {
 
 		String path = COLLECTION_PATH + "/" + coll.getName() + "/properties";
 		
-		JsonNode root = rest.get(path,
+		JsonNode root = rest.get(buildPath(path),
 				new ResponseCallback<JsonNode>() {
 					@Override
 					public JsonNode success(ArangoDbHttpResponse hr)
@@ -471,7 +514,7 @@ public class Database {
 		
 		String path = COLLECTION_PATH + "/" + coll.getName() + "/properties";
 		
-		JsonNode root = rest.get(path,
+		JsonNode root = rest.get(buildPath(path),
 				new ResponseCallback<JsonNode>() {
 					@Override
 					public JsonNode success(ArangoDbHttpResponse hr)
@@ -496,7 +539,7 @@ public class Database {
 	public void deleteCollection (Collection coll)  throws ArangoDb4JException {
 		ArangoDbAssert.notNull(coll, "given collection is null");
 		String path = COLLECTION_PATH + "/" + coll.getName();		
-		rest.delete(path);
+		rest.delete(buildPath(path));
 	}
 	
 	// /////////////////////////////////////////////////////////////////////////

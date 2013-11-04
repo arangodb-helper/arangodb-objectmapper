@@ -11,7 +11,7 @@ public class DatabaseCRUDTest extends BaseTestCase {
 	
 	protected void setUp() {
 		super.setUp();
-		database = new Database(client);
+		database = new Database(client, "_system");
 	}
 
 	protected void tearDown() {
