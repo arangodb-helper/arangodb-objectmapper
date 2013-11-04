@@ -115,6 +115,76 @@ public class DatabaseCRUDTest extends BaseTestCase {
 		assertEquals(p.getId(), p2.getId());
 		assertFalse(p.getRevision().equals(p2.getRevision()));
 		assertEquals(p.getX(), new Integer(9));
+		assertEquals(p.getY(), new Integer(14));		
+	}
+
+	public void test_updateDocument2 () {
+		// create
+		Point p = createPoint(8, 14);
+		String key = p.getKey();
+                
+                final String rev = p.getRevision();
+		
+		// read
+		Point p2 = null;		
+		try {
+			p2 = database.readDocument(Point.class, key);
+		} catch (ArangoDb4JException e) {
+			e.printStackTrace();
+		}		
+		assertNotNull(p2);
+
+		
+		// update
+		p.setX(9);
+		try {
+			database.updateDocument(p);
+		} catch (ArangoDb4JException e) {
+			e.printStackTrace();
+		}		
+
+                // read again from database
+                p2 = null;
+		try {
+			p2 = database.readDocument(Point.class, key);
+		} catch (ArangoDb4JException e) {
+			e.printStackTrace();
+		}		
+		assertNotNull(p2);
+		
+		assertEquals(p.getKey(), p2.getKey());
+		assertEquals(p.getId(), p2.getId());
+		assertFalse(rev.equals(p2.getRevision()));
+		assertEquals(p.getX(), new Integer(9));
+		assertEquals(p.getY(), new Integer(14));
+	}
+
+	public void test_replaceDocument () {
+		// create
+		Point p = createPoint(8, 14);
+		String key = p.getKey();
+		
+		// read
+		Point p2 = null;		
+		try {
+			p2 = database.readDocument(Point.class, key);
+		} catch (ArangoDb4JException e) {
+			e.printStackTrace();
+		}		
+		assertNotNull(p2);
+		
+		// update
+		p.setX(9);
+		try {
+			database.replaceDocument(p);
+		} catch (ArangoDb4JException e) {
+			e.printStackTrace();
+		}		
+		
+		assertEquals(p.getKey(), p2.getKey());
+		assertEquals(p.getId(), p2.getId());
+		assertFalse(p.getRevision().equals(p2.getRevision()));
+		assertEquals(p.getX(), new Integer(9));
 		assertEquals(p.getY(), p2.getY());		
 	}
 	

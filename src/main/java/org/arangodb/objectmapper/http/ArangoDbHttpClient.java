@@ -19,6 +19,7 @@ import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpHead;
+import org.apache.http.client.methods.HttpPatch;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpRequestBase;
@@ -86,7 +87,7 @@ public class ArangoDbHttpClient {
 	}
 
 	public ArangoDbHttpResponse post(String uri, String content) throws ArangoDb4JException {
-		return executePutPost(new HttpPost(uri), content);
+		return executeWithBody(new HttpPost(uri), content);
 	}
 
 	public ArangoDbHttpResponse post(String uri, InputStream content) throws ArangoDb4JException {
@@ -95,6 +96,18 @@ public class ArangoDbHttpClient {
 		HttpPost post = new HttpPost(uri);
 		post.setEntity(e);
 		return executeRequest(post);
+	}
+
+	public ArangoDbHttpResponse patch(String uri, String content) throws ArangoDb4JException {
+		return executeWithBody(new HttpPatch(uri), content);
+	}
+
+	public ArangoDbHttpResponse patch(String uri, InputStream content) throws ArangoDb4JException {
+		InputStreamEntity e = new InputStreamEntity(content, -1);
+		e.setContentType(MIME_TYPE_JSON);
+		HttpPatch patch = new HttpPatch(uri);
+		patch.setEntity(e);
+		return executeRequest(patch);
 	}
 
 	public ArangoDbHttpResponse get(String uri) throws ArangoDb4JException {
@@ -110,7 +123,7 @@ public class ArangoDbHttpClient {
 	}
 
 	public ArangoDbHttpResponse put(String uri, String content) throws ArangoDb4JException {
-		return executePutPost(new HttpPut(uri), content);
+		return executeWithBody(new HttpPut(uri), content);
 	}
 
 	public ArangoDbHttpResponse put(String uri) throws ArangoDb4JException {
@@ -131,7 +144,7 @@ public class ArangoDbHttpClient {
 		return executeRequest(new HttpHead(uri));
 	}
 
-	private ArangoDbHttpResponse executePutPost(
+	private ArangoDbHttpResponse executeWithBody(
 			HttpEntityEnclosingRequestBase request, String content) throws ArangoDb4JException {
 		
 		LOG.debug("Request-body: " + content);

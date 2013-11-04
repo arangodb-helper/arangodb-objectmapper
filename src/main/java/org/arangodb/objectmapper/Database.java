@@ -165,12 +165,11 @@ public class Database {
 		});
 	}
 	
-	
-	/**
+        /**
 	 * Update object 
 	 * 
 	 * @param o     the object to update
-	 * 
+	 *
 	 * @return T    Returns the given object. (new Revision
 	 *         is filled)
 	 * 
@@ -179,6 +178,67 @@ public class Database {
 	 */
 
 	public <T extends ArangoDbDocument> T updateDocument(T o)
+			throws ArangoDb4JException {
+		return updateDocument(o, true);
+        }
+	
+	
+	/**
+	 * Update object 
+	 * 
+	 * @param o     the object to update
+	 *
+         * @param keepNull     whether or not null values remove attributes
+	 * 
+	 * @return T    Returns the given object. (new Revision
+	 *         is filled)
+	 * 
+	 * @throws ArangoDb4JException
+	 *             on connection, database and unserialize errors 
+	 */
+
+	public <T extends ArangoDbDocument> T updateDocument(T o, boolean keepNull)
+			throws ArangoDb4JException {
+		ArangoDbAssert.notNull(o, "given object is null");
+		
+		if (o.isNew()) {
+			throw new ArangoDb4JException("Document is new.");
+		}
+
+		String collection = getCollectionName(o.getClass());
+		String path = DOCUMENT_PATH + collection + "/" + o.getKey() +
+                              "?keepNull=" + (keepNull ? "true" : "false");
+
+		// TODO: add revision check
+		
+		RevisionResponse resp = rest.patch(path, serializer.toJson(o),
+				new ResponseCallback<RevisionResponse>() {
+					@Override
+					public RevisionResponse success(ArangoDbHttpResponse hr)
+							throws ArangoDb4JException {
+						return serializer.toObject(hr.getContentAsStream(),
+								RevisionResponse.class);
+					}
+				});
+
+		o.setRevision(resp.getRevision());
+
+		return o;
+	}
+
+	/**
+	 * Replace object 
+	 * 
+	 * @param o     the object to replace
+	 * 
+	 * @return T    Returns the given object. (new Revision
+	 *         is filled)
+	 * 
+	 * @throws ArangoDb4JException
+	 *             on connection, database and unserialize errors 
+	 */
+
+	public <T extends ArangoDbDocument> T replaceDocument(T o)
 			throws ArangoDb4JException {
 		ArangoDbAssert.notNull(o, "given object is null");
 		
