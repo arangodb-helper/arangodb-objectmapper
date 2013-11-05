@@ -216,7 +216,7 @@ public class Cursor<T extends ArangoDbDocument> implements Iterator<T> {
 	private JsonNode createCursor (final ArangoDbQuery<T> query) throws ArangoDb4JException {
 		String body = database.getSerializer().toJson(query.getAsMap());
 		//System.out.println(body);
-		return database.getRestHandler().post(CURSOR_PATH, body,
+		return database.getRestHandler().post(database.buildPath(CURSOR_PATH), body,
 				new ResponseCallback<JsonNode>() {
 					@Override
 					public JsonNode success(ArangoDbHttpResponse hr)
@@ -227,7 +227,7 @@ public class Cursor<T extends ArangoDbDocument> implements Iterator<T> {
 	}
 
 	private JsonNode updateCursor (String id) throws ArangoDb4JException {
-		return database.getRestHandler().put(CURSOR_PATH + "/"+ id, "", 
+		return database.getRestHandler().put(database.buildPath(CURSOR_PATH) + "/"+ id, "", 
 				new ResponseCallback<JsonNode>() {
 					@Override
 					public JsonNode success(ArangoDbHttpResponse hr)
@@ -238,7 +238,7 @@ public class Cursor<T extends ArangoDbDocument> implements Iterator<T> {
 	}
 	
 	private void deleteCursor (String id) throws ArangoDb4JException {
-		database.getRestHandler().delete(CURSOR_PATH + id);
+		database.getRestHandler().delete(database.buildPath(CURSOR_PATH) + id);
 	}	
 		
 

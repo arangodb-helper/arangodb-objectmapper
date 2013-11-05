@@ -84,6 +84,22 @@ public class QueryTest extends BaseTestCase {
 		}		
 		assertEquals(5, count);
 	}
+	
+        public void test_getAllByQueryWithBatchSize () {
+		int num = 1000;
+		createNumPoints(num);
+		
+		ArangoDbQuery<Point> query = database.getQuery(Point.class);
+		query.batchSize(50);
+		
+		int count = 0;
+		Cursor<Point> iter =  query.execute();
+		while (iter.hasNext()) {
+			iter.next();
+			++count;
+		}		
+		assertEquals(num, count);
+	}
 
 	public void test_databaseGetAll () {
 		int num = 10;
@@ -160,6 +176,7 @@ public class QueryTest extends BaseTestCase {
 		createNumPoints(num);
 		
 		ArangoDbQuery<Point> query = database.getQuery(Point.class);
+                query.batchSize(1000);
 		
 		int count = 0;
 		Cursor<Point> iter =  query.execute();

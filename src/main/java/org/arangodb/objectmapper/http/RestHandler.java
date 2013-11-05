@@ -53,6 +53,14 @@ public class RestHandler {
 	public <T> T post(String path, InputStream content, ResponseCallback<T> callback) throws ArangoDb4JException {
 		return handleResponse(callback, client.post(path, content));
 	}
+
+	public <T> T patch(String path, String content, ResponseCallback<T> callback) throws ArangoDb4JException {
+		return handleResponse(callback, client.patch(path, content));
+	}
+
+	public <T> T patch(String path, InputStream content, ResponseCallback<T> callback) throws ArangoDb4JException {
+		return handleResponse(callback, client.patch(path, content));
+	}
 	
 	public <T> T delete(String path, ResponseCallback<T> callback) throws ArangoDb4JException {
 		return handleResponse(callback, client.delete(path));

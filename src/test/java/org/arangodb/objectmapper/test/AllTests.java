@@ -8,6 +8,7 @@ public class AllTests {
 		    TestSuite suite = new TestSuite();
 		    suite.addTestSuite(CollectionTest.class);
 		    suite.addTestSuite(DatabaseCRUDTest.class);
+		    suite.addTestSuite(DatabaseTest.class);
 		    suite.addTestSuite(QueryTest.class);
 		    suite.addTestSuite(IndexTest.class);
 		    suite.addTestSuite(RepositoryTest.class);

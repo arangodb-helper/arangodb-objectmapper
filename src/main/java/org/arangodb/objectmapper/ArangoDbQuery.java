@@ -40,6 +40,12 @@ public class ArangoDbQuery<T extends ArangoDbDocument> {
      */
 
     private Long limit = null;
+
+    /**
+     * batch size
+     */
+
+    private Long batchSize = 100L;
     
     /**
      * simple property filters
@@ -136,6 +142,19 @@ public class ArangoDbQuery<T extends ArangoDbDocument> {
         this.limit = max;
         return this;
     }
+
+    /**
+     * Set the batch size
+     * 
+     * @param batchSize         the batch size (max. number of documents per roundtrip)
+     * 
+     * @return  ArangoDbQuery<T>         the query
+     */
+
+    public ArangoDbQuery<T> batchSize(long batchSize) {
+        this.batchSize = batchSize;
+        return this;
+    }
     
     /**
      * Get the AQL query as a map
@@ -152,7 +171,7 @@ public class ArangoDbQuery<T extends ArangoDbDocument> {
     	
     	result.put("query", query);
     	result.put("count", false);
-    	result.put("batchSize", 100);
+    	result.put("batchSize", batchSize);
     	result.put("bindVars", propertyFilter.getBindVars());
     	
     	return result;
