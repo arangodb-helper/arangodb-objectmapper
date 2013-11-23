@@ -224,8 +224,6 @@ public class ArangoDbQuery<T extends ArangoDbDocument> {
 
     	String query = "FOR x IN `" + Database.getCollectionName(valueType) + "` " + propertyFilter.getFilterString() + propertySort.getSortString() + limitString  + " RETURN x";
 
-        System.out.println("QUERY: " + query);
-
     	result.put("query", query);
     	result.put("count", false);
     	result.put("batchSize", batchSize);
