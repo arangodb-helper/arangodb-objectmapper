@@ -103,3 +103,20 @@ while (cursor.hasNext()) {
 }
 ```
 
+Sort by key
+```
+Cursor<Point> cursor = repo.getQuery().sort("X", PropertySort.Direction.DESCENDING).execute();
+while (cursor.hasNext()) {
+	Point p = cursor.next();
+	...
+}
+```
+
+Windowing
+```
+Cursor<Point> cursor = repo.getQuery().limit(11,10).sort("X", PropertySort.Direction.DESCENDING).execute();
+while (cursor.hasNext()) {
+	Point p = cursor.next();
+	...
+}
+```

@@ -12,12 +12,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.arangodb.objectmapper.PropertyFilter.Compare;
+import org.arangodb.objectmapper.PropertySort.Direction;
 import org.arangodb.objectmapper.jackson.ArangoDbDocument;
 
 
 /**
  * a simple query (only one collection)
- * 
+ *
  * @author abrandt
  */
 
@@ -42,11 +43,17 @@ public class ArangoDbQuery<T extends ArangoDbDocument> {
     private Long limit = null;
 
     /**
+     * numbers of results to skip
+     */
+
+    private Long offset = null;
+
+    /**
      * batch size
      */
 
     private Long batchSize = 100L;
-    
+
     /**
      * simple property filters
      */
@@ -54,23 +61,29 @@ public class ArangoDbQuery<T extends ArangoDbDocument> {
     private PropertyFilter propertyFilter = new PropertyFilter();
 
     /**
-     * constructor
-     * 
-     * @param database    the database
-     * @param valueType   the class (to specify collection and returned objects) 
+     * sort property filters
      */
 
-    public ArangoDbQuery(final Database database, final Class<T> valueType) {    	
+    private PropertySort propertySort = new PropertySort();
+
+    /**
+     * constructor
+     *
+     * @param database    the database
+     * @param valueType   the class (to specify collection and returned objects)
+     */
+
+    public ArangoDbQuery(final Database database, final Class<T> valueType) {
     	this.database = database;
     	this.valueType = valueType;
     }
 
     /**
      * Filter by a key value pair
-     * 
+     *
      * @param key         the key
      * @param value       the value
-     * 
+     *
      * @return ArangoDbQuery<T>          the query
      */
 
@@ -80,12 +93,39 @@ public class ArangoDbQuery<T extends ArangoDbDocument> {
     }
 
     /**
+     * Sort by a key with direction
+     *
+     * @param key         the key
+     * @param direction       the direction
+     *
+     * @return ArangoDbQuery<T>          the query
+     */
+
+    public ArangoDbQuery<T> sort(final String key, final Direction direction) {
+        propertySort.sort(key, direction);
+        return this;
+    }
+
+    /**
+     * Sort by a key (Ascending Direction)
+     *
+     * @param key         the key
+     *
+     * @return ArangoDbQuery<T>          the query
+     */
+
+    public ArangoDbQuery<T> sort(final String key) {
+        propertySort.sort(key, Direction.ASCENDING);
+        return this;
+    }
+
+    /**
      * Filter
-     * 
+     *
      * @param key         the key
      * @param value       the value
      * @param compare     a compare function
-     * 
+     *
      * @return ArangoDbQuery<T>          the query
      */
 
@@ -115,11 +155,11 @@ public class ArangoDbQuery<T extends ArangoDbDocument> {
 
     /**
      * Filter an interval
-     * 
+     *
      * @param key         the key
      * @param startValue  the start value
      * @param endValue    the end value
-     * 
+     *
      * @return ArangoDbQuery<T>          the query
      */
 
@@ -132,9 +172,9 @@ public class ArangoDbQuery<T extends ArangoDbDocument> {
 
     /**
      * Limit the number of results
-     * 
+     *
      * @param max         the maximum number of results
-     * 
+     *
      * @return  ArangoDbQuery<T>         the query
      */
 
@@ -144,10 +184,25 @@ public class ArangoDbQuery<T extends ArangoDbDocument> {
     }
 
     /**
+     * Limit the number of results with an offset
+     *
+     * @param max         the maximum number of results
+     * @param offset      the results position to start from
+     *
+     * @return  ArangoDbQuery<T>         the query
+     */
+
+    public ArangoDbQuery<T> limit(final long offset, final long max) {
+        this.limit = max;
+        this.offset = offset;
+        return this;
+    }
+
+    /**
      * Set the batch size
-     * 
+     *
      * @param batchSize         the batch size (max. number of documents per roundtrip)
-     * 
+     *
      * @return  ArangoDbQuery<T>         the query
      */
 
@@ -155,44 +210,44 @@ public class ArangoDbQuery<T extends ArangoDbDocument> {
         this.batchSize = batchSize;
         return this;
     }
-    
+
     /**
      * Get the AQL query as a map
-     * 
+     *
      * @return Map<String, Object>  the map
      */
 
     public Map<String, Object> getAsMap() {
     	HashMap<String, Object> result = new HashMap<String, Object>();
 
-    	String limitString = (null == limit) ? "" : " LIMIT " + limit;
-    	    	
-    	String query = "FOR x IN `" + Database.getCollectionName(valueType) + "` " + propertyFilter.getFilterString() + limitString  + " RETURN x";
-    	
+    	String limitString = (null == limit) ? "" : " LIMIT " + (null == offset ? "" : offset + ", ") + limit;
+
+    	String query = "FOR x IN `" + Database.getCollectionName(valueType) + "` " + propertyFilter.getFilterString() + propertySort.getSortString() + limitString  + " RETURN x";
+
     	result.put("query", query);
     	result.put("count", false);
     	result.put("batchSize", batchSize);
     	result.put("bindVars", propertyFilter.getBindVars());
-    	
+
     	return result;
     }
-    
+
     /**
      * Executes the query and returns a cursor (Iterator)
-     * 
+     *
      * @return Cursor<T>  the result iterator
      */
-    
+
     public Cursor<T> execute() {
     	return new Cursor<T>(database, this);
     }
 
     /**
      * Returns the class type
-     * 
+     *
      * @return Class<T>  the class type
      */
-    
+
     public Class<T> getValueType() {
 		return valueType;
 	}
