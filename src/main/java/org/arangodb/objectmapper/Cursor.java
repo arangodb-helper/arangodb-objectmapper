@@ -190,7 +190,7 @@ public class Cursor<T extends ArangoDbDocument> implements Iterator<T> {
      */
 	
 	public void remove () {
-		if (!hasNext()) {
+		if (! hasNext()) {
 			return;			
 		}
 		
@@ -238,7 +238,9 @@ public class Cursor<T extends ArangoDbDocument> implements Iterator<T> {
 	}
 	
 	private void deleteCursor (String id) throws ArangoDb4JException {
-		database.getRestHandler().delete(database.buildPath(CURSOR_PATH) + id);
+                if (! id.equals("")) {
+		        database.getRestHandler().delete(database.buildPath(CURSOR_PATH) + id);
+                }
 	}	
 		
 

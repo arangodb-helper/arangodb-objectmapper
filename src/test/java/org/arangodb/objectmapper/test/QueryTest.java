@@ -62,11 +62,13 @@ public class QueryTest extends BaseTestCase {
 		
 		int count = 0;
 		Cursor<Point> iter =  query.execute();
+		assertEquals(num, iter.count());
 		while (iter.hasNext()) {
 			iter.next();
 			++count;
 		}		
 		assertEquals(num, count);
+		assertEquals(num, iter.count());
 	}
 
 	public void test_getAllByQueryWithLimit () {
@@ -78,11 +80,14 @@ public class QueryTest extends BaseTestCase {
 		
 		int count = 0;
 		Cursor<Point> iter =  query.execute();
+		assertEquals(5, iter.count());
+
 		while (iter.hasNext()) {
 			iter.next();
 			++count;
 		}		
 		assertEquals(5, count);
+		assertEquals(5, iter.count());
 	}
 	
         public void test_getAllByQueryWithBatchSize () {
@@ -93,12 +98,51 @@ public class QueryTest extends BaseTestCase {
 		query.batchSize(50);
 		
 		int count = 0;
-		Cursor<Point> iter =  query.execute();
+		Cursor<Point> iter = query.execute();
+		assertEquals(num, iter.count());
 		while (iter.hasNext()) {
 			iter.next();
 			++count;
 		}		
 		assertEquals(num, count);
+		assertEquals(num, iter.count());
+	}
+        
+        public void test_getAllByQueryWithModifiedBatchSize () {
+		int num = 1000;
+		createNumPoints(num);
+		
+		ArangoDbQuery<Point> query = database.getQuery(Point.class);
+		query.batchSize(1000);
+		
+		int count = 0;
+		Cursor<Point> iter = query.execute();
+		assertEquals(num, iter.count());
+		while (iter.hasNext()) {
+			iter.next();
+			++count;
+		}		
+		assertEquals(num, count);
+		assertEquals(num, iter.count());
+	}
+        
+        public void test_getAllByQueryWithoutCount () {
+		int num = 1500;
+		createNumPoints(num);
+		
+		ArangoDbQuery<Point> query = database.getQuery(Point.class);
+		query.count(false);
+		
+		int count = 0;
+		Cursor<Point> iter = query.execute();
+                // count is not set
+		assertEquals(0, iter.count());
+		while (iter.hasNext()) {
+			iter.next();
+			++count;
+		}		
+		assertEquals(num, count);
+		assertEquals(0, iter.count());
 	}
 
 	public void test_databaseGetAll () {
@@ -112,6 +156,7 @@ public class QueryTest extends BaseTestCase {
 		}
 		
 		assertNotNull(cursor);
+		assertEquals(num, cursor.count());
 		
 		int count = 0;
 		while (cursor.hasNext()) {
@@ -120,6 +165,7 @@ public class QueryTest extends BaseTestCase {
 		}
 		
 		assertEquals(num, count);
+		assertEquals(num, cursor.count());
 	}
 
 	public void test_hasQuery () {
@@ -131,11 +177,13 @@ public class QueryTest extends BaseTestCase {
 		
 		int count = 0;
 		Cursor<Point> iter =  query.execute();
+		assertEquals(1, iter.count());
 		while (iter.hasNext()) {
 			iter.next();
 			++count;
 		}		
 		assertEquals(1, count);
+		assertEquals(1, iter.count());
 	}
 	
 	public void test_compareQuery () {
@@ -148,11 +196,13 @@ public class QueryTest extends BaseTestCase {
 		
 		int count = 0;
 		Cursor<Point> iter =  query.execute();
+		assertEquals(2, iter.count());
 		while (iter.hasNext()) {
 			iter.next();
 			++count;
 		}		
 		assertEquals(2, count);
+		assertEquals(2, iter.count());
 	}
 
 	public void test_intervalQuery () {
@@ -164,11 +214,13 @@ public class QueryTest extends BaseTestCase {
 		
 		int count = 0;
 		Cursor<Point> iter =  query.execute();
+		assertEquals(2, iter.count());
 		while (iter.hasNext()) {
 			iter.next();
 			++count;
 		}		
 		assertEquals(2, count);
+		assertEquals(2, iter.count());
 	}
 
 	public void test_createAndQueryMany () {
@@ -180,11 +232,13 @@ public class QueryTest extends BaseTestCase {
 		
 		int count = 0;
 		Cursor<Point> iter =  query.execute();
+		assertEquals(num, iter.count());
 		while (iter.hasNext()) {
 			iter.next();
 			++count;
 		}		
 		assertEquals(num, count);
+		assertEquals(num, iter.count());
 	}
 	
 }

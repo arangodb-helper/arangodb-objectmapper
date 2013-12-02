@@ -52,7 +52,13 @@ public class ArangoDbQuery<T extends ArangoDbDocument> {
      * batch size
      */
 
-    private Long batchSize = 100L;
+    private Long batchSize = 1000L;
+    
+    /**
+     * whether or not we ask the server to count the documents in the result
+     */
+
+    private boolean count = true;
 
     /**
      * simple property filters
@@ -210,6 +216,19 @@ public class ArangoDbQuery<T extends ArangoDbDocument> {
         this.batchSize = batchSize;
         return this;
     }
+    
+    /**
+     * Set the count attribute
+     *
+     * @param count         whether or not the server is asked to return the number of docs in the result
+     *
+     * @return  ArangoDbQuery<T>         the query
+     */
+
+    public ArangoDbQuery<T> count(boolean count) {
+        this.count = count;
+        return this;
+    }
 
     /**
      * Get the AQL query as a map
@@ -225,7 +244,7 @@ public class ArangoDbQuery<T extends ArangoDbDocument> {
     	String query = "FOR x IN `" + Database.getCollectionName(valueType) + "` " + propertyFilter.getFilterString() + propertySort.getSortString() + limitString  + " RETURN x";
 
     	result.put("query", query);
-    	result.put("count", false);
+    	result.put("count", count);
     	result.put("batchSize", batchSize);
     	result.put("bindVars", propertyFilter.getBindVars());
 
