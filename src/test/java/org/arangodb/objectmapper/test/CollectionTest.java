@@ -90,7 +90,7 @@ public class CollectionTest extends BaseTestCase {
 		assertEquals(collection2.getType(), collection.getType());
 	}
 
-	public void test_delteCollection () {
+	public void test_deleteCollection () {
 		Collection collection = null;
 		
 		try {

@@ -9,7 +9,8 @@ package org.arangodb.objectmapper;
 //////////////////////////////////////////////////////////////////////////////////////////
 
 import java.util.List;
-
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import org.arangodb.objectmapper.http.ArangoDbHttpClient;
 import org.arangodb.objectmapper.http.ArangoDbHttpResponse;
 import org.arangodb.objectmapper.http.ResponseCallback;
@@ -159,8 +160,7 @@ public class Database {
 		}
 
 		String collection = getCollectionName(o.getClass());
-		String path = DOCUMENT_PATH + "?createCollection=true&collection="
-				+ collection;
+		String path = DOCUMENT_PATH + "?createCollection=true&collection=" + encodePart(collection);
 
 		RevisionResponse resp = rest.post(buildPath(path), serializer.toJson(o),
 				new ResponseCallback<RevisionResponse>() {
@@ -197,7 +197,7 @@ public class Database {
 		ArangoDbAssert.hasText(key, "document key is empty");
 
 		String collection = getCollectionName(c);
-		String path = DOCUMENT_PATH + collection + "/" + key;
+		String path = DOCUMENT_PATH + collection + "/" + encodePart(key);
 
 		return rest.get(buildPath(path), new ResponseCallback<T>() {
 			@Override
@@ -249,7 +249,7 @@ public class Database {
 		}
 
 		String collection = getCollectionName(o.getClass());
-		String path = DOCUMENT_PATH + collection + "/" + o.getKey() +
+		String path = DOCUMENT_PATH + collection + "/" + encodePart(o.getKey()) +
                               "?keepNull=" + (keepNull ? "true" : "false");
 
 		// TODO: add revision check
@@ -290,7 +290,7 @@ public class Database {
 		}
 
 		String collection = getCollectionName(o.getClass());
-		String path = DOCUMENT_PATH + collection + "/" + o.getKey();
+		String path = DOCUMENT_PATH + collection + "/" + encodePart(o.getKey());
 
 		// TODO: add revision check
 		
@@ -319,7 +319,7 @@ public class Database {
 	 */
 
 	public void deleteDocument(ArangoDbDocument o)
-			throws ArangoDb4JException {
+			throws ArangoDb4JException  {
 		ArangoDbAssert.notNull(o, "given object is null");
 		
 		if (o.isNew()) {
@@ -328,7 +328,7 @@ public class Database {
 		}
 
 		String collection = getCollectionName(o.getClass());
-		String path = DOCUMENT_PATH + collection + "/" + o.getKey();
+		String path = DOCUMENT_PATH + collection + "/" + encodePart(o.getKey());
 
 		// TODO: add revision check
 		
@@ -379,11 +379,11 @@ public class Database {
 		return createIndex(new Collection(name), index);
 	}
 	
-	public Index createIndex (Collection coll, Index index)  throws ArangoDb4JException {
+	public Index createIndex (Collection coll, Index index)  throws ArangoDb4JException  {
 		ArangoDbAssert.notNull(coll, "given collection is null");
 		ArangoDbAssert.notNull(index, "given index is null");
 		
-		String path = INDEX_PATH + "?collection=" + coll.getName();
+		String path = INDEX_PATH + "?collection=" + encodePart(coll.getName());
 		
 		JsonNode root = rest.post(buildPath(path), serializer.toJson(index.getAsMap()),
 				new ResponseCallback<JsonNode>() {
@@ -399,7 +399,7 @@ public class Database {
 		return index;
 	}
 	
-	public Index readIndex (String id)  throws ArangoDb4JException {
+	public Index readIndex (String id)  throws ArangoDb4JException  {
 		Index index = new Index();
 		index.setId(id);
 		return readIndex(index);
@@ -435,7 +435,7 @@ public class Database {
 	public List<Index> readIndexList (Collection coll)  throws ArangoDb4JException {
 		ArangoDbAssert.notNull(coll, "given collection is null");
 		
-		String path = INDEX_PATH + "?collection=" + coll.getName();
+		String path = INDEX_PATH + "?collection=" + encodePart(coll.getName());
 		
 		JsonNode root = rest.get(buildPath(path),
 				new ResponseCallback<JsonNode>() {
@@ -455,9 +455,9 @@ public class Database {
 		deleteIndex(index);
 	}
 	
-	public void deleteIndex (Index index)  throws ArangoDb4JException {
+	public void deleteIndex (Index index)  throws ArangoDb4JException { 
 		ArangoDbAssert.notNull(index, "given index is null");
-		String path = INDEX_PATH + "/" + index.getId();		
+		String path = INDEX_PATH + "/" + index.getId();	
 		rest.delete(buildPath(path));
 	}
 	
@@ -485,7 +485,7 @@ public class Database {
 					}
 				});
 
-		String path = COLLECTION_PATH + "/" + coll.getName() + "/properties";
+		String path = COLLECTION_PATH + "/" + encodePart(coll.getName()) + "/properties";
 		
 		JsonNode root = rest.get(buildPath(path),
 				new ResponseCallback<JsonNode>() {
@@ -512,7 +512,7 @@ public class Database {
 	public Collection readCollection (Collection coll)  throws ArangoDb4JException {
 		ArangoDbAssert.notNull(coll, "given collection is null");
 		
-		String path = COLLECTION_PATH + "/" + coll.getName() + "/properties";
+		String path = COLLECTION_PATH + "/" + encodePart(coll.getName()) + "/properties";
 		
 		JsonNode root = rest.get(buildPath(path),
 				new ResponseCallback<JsonNode>() {
@@ -538,9 +538,18 @@ public class Database {
 
 	public void deleteCollection (Collection coll)  throws ArangoDb4JException {
 		ArangoDbAssert.notNull(coll, "given collection is null");
-		String path = COLLECTION_PATH + "/" + coll.getName();		
+		String path = COLLECTION_PATH + "/" + encodePart(coll.getName());	
 		rest.delete(buildPath(path));
 	}
+				
+        private String encodePart (String value) throws ArangoDb4JException {
+                try {
+                    return URLEncoder.encode(value, "UTF-8");
+                }
+                catch (UnsupportedEncodingException e) {
+                    throw new ArangoDb4JException("unexpected failure in encodePart");
+                }
+        }
 	
 	// /////////////////////////////////////////////////////////////////////////
 	// Utilities
