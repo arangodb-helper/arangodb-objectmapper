@@ -26,18 +26,29 @@ public abstract class BaseTestCase extends TestCase {
      */
 
 	protected final String docCollection = "unittest_collection";
+    
+    /**
+     * name of the test database
+     */
+	
+        protected final String dbName = "ArangoDbObjectMapper";
 	
     /**
      * path for the collection api
      */
 
 	protected final static String COLLECTION_PATH = "/_api/collection/"; 
+    
+    /**
+     * path for the database api
+     */
+
+	protected final static String DATABASE_PATH = "/_api/database/"; 
 	
 	
 	protected void setUp() {
-		
 		try {
-			client =  new ArangoDbHttpClient.Builder().build();
+			client = new ArangoDbHttpClient.Builder().build();
 		} catch (ArangoDb4JException e1) {
 			e1.printStackTrace();
 		}
@@ -59,21 +70,34 @@ public abstract class BaseTestCase extends TestCase {
 				.build();
         */
 		
-		database = new Database(client);
+                try {
+		        database = Database.createDatabase(client, dbName);
+                } 
+                catch (ArangoDb4JException e) {
+                        if (e.getStatusCode() == 409) {
+                            // conflict
+                            database = new Database(client, dbName);
+                        }
+                }
+
+                assertNotNull(database);
 
 		// delete some collections
 		try {
-			client.delete(COLLECTION_PATH + Database.getCollectionName(Point.class));
-		} catch (ArangoDb4JException e1) {
+			client.delete(database.buildPath(COLLECTION_PATH + Database.getCollectionName(Point.class)));
+		} 
+                catch (ArangoDb4JException e1) {
 		}
 				
 	}
 
 	protected void tearDown() {
 		try {
-			client.delete(COLLECTION_PATH + Database.getCollectionName(Point.class));
+			client.delete(database.buildPath(COLLECTION_PATH + Database.getCollectionName(Point.class)));
 		} catch (ArangoDb4JException e1) {
 		}
+
+                database = null;
 	}
 
 

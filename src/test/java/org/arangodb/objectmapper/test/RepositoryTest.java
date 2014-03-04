@@ -47,21 +47,27 @@ public class RepositoryTest extends BaseTestCase {
 			database.deleteCollection(Point.class);
 		}
 		catch (Exception e) {
-			
 		}
+                
+                // re-create collection
+                try {
+                        database.createCollection(Point.class);
+                }
+                catch (Exception e) {
+                        // ignore any errors
+                }
 		
 		repo = new PointRepository(database);
 	}
 
 	protected void tearDown() {
-		super.tearDown();
-		
 		try {
 			database.deleteCollection(Point.class);
 		}
 		catch (Exception e) {
-			
 		}
+
+		super.tearDown();
 	}
 	
 	private Point createPoint(Integer x, Integer y) {

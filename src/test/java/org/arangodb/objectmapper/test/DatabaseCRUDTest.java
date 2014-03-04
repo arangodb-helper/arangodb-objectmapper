@@ -12,10 +12,30 @@ public class DatabaseCRUDTest extends BaseTestCase {
 	protected void setUp() {
 		super.setUp();
 		database = new Database(client, "_system");
+		
+                try {
+			database.deleteCollection(Point.class);
+		}
+		catch (Exception e) {
+		}
+                
+                // re-create collection
+                try {
+                        database.createCollection(Point.class);
+                }
+                catch (Exception e) {
+                        // ignore any errors
+                }
 	}
 
 	protected void tearDown() {
-		super.tearDown();
+		try {
+			database.deleteCollection(Point.class);
+		}
+		catch (Exception e) {
+		}
+		
+                super.tearDown();
 	}
 
 	private Point createPoint(Integer x, Integer y) {
@@ -63,7 +83,6 @@ public class DatabaseCRUDTest extends BaseTestCase {
 			database.createDocument(p);
 			assertTrue(false);
 		} catch (ArangoDb4JException e) {
-			assertTrue(true);
 		}
 	}
 	

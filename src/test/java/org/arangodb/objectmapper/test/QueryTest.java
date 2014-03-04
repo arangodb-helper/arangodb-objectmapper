@@ -14,19 +14,25 @@ public class QueryTest extends BaseTestCase {
 			database.deleteCollection(Point.class);
 		}
 		catch (Exception e) {
-			
 		}
+		
+                // re-create collection
+                try {
+                        database.createCollection(Point.class);
+                }
+                catch (Exception e) {
+                        // ignore any errors
+                }
 	}
 
 	protected void tearDown() {
-		super.tearDown();
-		
 		try {
 			database.deleteCollection(Point.class);
 		}
 		catch (Exception e) {
-			
 		}
+		
+                super.tearDown();
 	}
 
 	private Point createPoint(Integer x, Integer y) {
@@ -52,7 +58,6 @@ public class QueryTest extends BaseTestCase {
 			createPoint(5 + i, 10 + i); 						
 		}
 	}
-	
 	
 	public void test_getAllByQuery () {
 		int num = 10;
@@ -88,10 +93,11 @@ public class QueryTest extends BaseTestCase {
 		}		
 		assertEquals(5, count);
 		assertEquals(5, iter.count());
+
 	}
 	
         public void test_getAllByQueryWithBatchSize () {
-		int num = 1000;
+		int num = 200;
 		createNumPoints(num);
 		
 		ArangoDbQuery<Point> query = database.getQuery(Point.class);
@@ -109,11 +115,11 @@ public class QueryTest extends BaseTestCase {
 	}
         
         public void test_getAllByQueryWithModifiedBatchSize () {
-		int num = 1000;
+		int num = 200;
 		createNumPoints(num);
 		
 		ArangoDbQuery<Point> query = database.getQuery(Point.class);
-		query.batchSize(1000);
+		query.batchSize(100);
 		
 		int count = 0;
 		Cursor<Point> iter = query.execute();
@@ -127,7 +133,7 @@ public class QueryTest extends BaseTestCase {
 	}
         
         public void test_getAllByQueryWithoutCount () {
-		int num = 1500;
+		int num = 300;
 		createNumPoints(num);
 		
 		ArangoDbQuery<Point> query = database.getQuery(Point.class);
@@ -142,6 +148,26 @@ public class QueryTest extends BaseTestCase {
 			++count;
 		}		
 		assertEquals(num, count);
+		assertEquals(0, iter.count());
+	}
+        
+        public void test_getAllByQueryWithoutCountWithLimit () {
+		int num = 300;
+		createNumPoints(num);
+		
+		ArangoDbQuery<Point> query = database.getQuery(Point.class);
+		query.count(false);
+                query.limit(50);
+		
+		int count = 0;
+		Cursor<Point> iter = query.execute();
+                // count is not set
+		assertEquals(0, iter.count());
+		while (iter.hasNext()) {
+			iter.next();
+			++count;
+		}		
+		assertEquals(50, count);
 		assertEquals(0, iter.count());
 	}
 
@@ -224,11 +250,11 @@ public class QueryTest extends BaseTestCase {
 	}
 
 	public void test_createAndQueryMany () {
-		int num = 10000;
+		int num = 300;
 		createNumPoints(num);
 		
 		ArangoDbQuery<Point> query = database.getQuery(Point.class);
-                query.batchSize(1000);
+                query.batchSize(100);
 		
 		int count = 0;
 		Cursor<Point> iter =  query.execute();

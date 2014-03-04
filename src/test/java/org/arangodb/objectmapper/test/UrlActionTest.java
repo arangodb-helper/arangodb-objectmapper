@@ -1,6 +1,5 @@
 package org.arangodb.objectmapper.test;
 
-
 import java.io.InputStream;
 import java.io.IOException;
 import java.util.HashMap;
@@ -19,7 +18,6 @@ public class UrlActionTest extends BaseTestCase {
 	
 	protected void setUp() {
 		super.setUp();
-		database = new Database(client);
 	}
 
 	protected void tearDown() {
@@ -30,7 +28,7 @@ public class UrlActionTest extends BaseTestCase {
             try {
                 Map<String, Object> m = new HashMap<String, Object>();
                 
-                ArangoDbHttpResponse response = client.get("/_api/version"); 
+                ArangoDbHttpResponse response = client.get("/_db/_system/_api/version"); 
                 
                 assertTrue(response.getContentLength() > 0);
 
@@ -51,7 +49,7 @@ public class UrlActionTest extends BaseTestCase {
             try {
                 Map<String, Object> m = new HashMap<String, Object>();
                 
-                ArangoDbHttpResponse response = client.head("/_api/version"); 
+                ArangoDbHttpResponse response = client.head("/_db/_system/_api/version"); 
 
                 assertEquals(0, response.getContentLength());
             } catch (ArangoDb4JException ex) {

@@ -41,6 +41,7 @@ import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 import org.apache.http.params.HttpProtocolParams;
+import org.apache.http.protocol.RequestExpectContinue;
 import org.arangodb.objectmapper.ArangoDb4JException;
 import org.apache.log4j.Logger;
 
@@ -75,8 +76,9 @@ public class ArangoDbHttpClient {
 	 * the logger
 	 */
 
-	private final static Logger LOG = Logger
-			.getLogger(ArangoDbHttpClient.class);
+	private final static Logger LOG = Logger.getLogger(ArangoDbHttpClient.class);
+
+        private String apiCompatibility;
 	
 	/**
 	 * constructor
@@ -85,6 +87,14 @@ public class ArangoDbHttpClient {
 	public ArangoDbHttpClient(org.apache.http.client.HttpClient hc) {
 		this.client = hc;
 	}
+
+        public void setApiCompatibility(String s) {
+                apiCompatibility = s;
+        }
+        
+        public void setApiCompatibility(int s) {
+                apiCompatibility = String.valueOf(s);
+        }
 
 	public ArangoDbHttpResponse post(String uri, String content) throws ArangoDb4JException {
 		return executeWithBody(new HttpPost(uri), content);
@@ -168,8 +178,11 @@ public class ArangoDbHttpClient {
 
 	private ArangoDbHttpResponse executeRequest(HttpUriRequest request) throws ArangoDb4JException {
 		org.apache.http.HttpResponse rsp;
+		
 		try {
-			
+                        if (apiCompatibility != null) {
+		                request.setHeader("X-Arango-Version", apiCompatibility);	
+                        }
 			rsp = client.execute((HttpHost)client.getParams().getParameter(ClientPNames.DEFAULT_HOST), request);
 			
 		} catch (ClientProtocolException e) {
@@ -197,7 +210,7 @@ public class ArangoDbHttpClient {
 		String host = "localhost";
 		int port = 8529;
 		int maxConnections = 20;
-		int connectionTimeout = 1000;
+		int connectionTimeout = 3000;
 		int socketTimeout = 10000;
 		ClientConnectionManager conman;
 		int proxyPort = -1;
@@ -211,7 +224,7 @@ public class ArangoDbHttpClient {
 		String password;
 
 		boolean cleanupIdleConnections = true;
-		boolean useExpectContinue = true;
+		boolean useExpectContinue = false;
 		boolean caching = true;
 		boolean compression; // Default is false;
 		int maxObjectSizeBytes = 8192;
@@ -360,8 +373,7 @@ public class ArangoDbHttpClient {
 		public org.apache.http.client.HttpClient configureClient() throws ArangoDb4JException {
 			HttpParams params = new BasicHttpParams();
 			HttpProtocolParams.setUseExpectContinue(params, useExpectContinue);
-			HttpConnectionParams
-					.setConnectionTimeout(params, connectionTimeout);
+			HttpConnectionParams.setConnectionTimeout(params, connectionTimeout);
 			HttpConnectionParams.setSoTimeout(params, socketTimeout);
 			HttpConnectionParams.setTcpNoDelay(params, Boolean.TRUE);
 

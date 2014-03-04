@@ -19,6 +19,10 @@ public class RestHandler {
 		this.client = client;
 	}
 
+        public ArangoDbHttpClient getClient() {
+                return client;
+        }
+
 	public <T> T get(String path, ResponseCallback<T> callback) throws ArangoDb4JException {
 		ArangoDbHttpResponse hr = client.get(path);
 		return handleResponse(callback, hr);

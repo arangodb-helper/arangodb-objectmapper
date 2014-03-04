@@ -12,6 +12,11 @@ public class IndexTest extends BaseTestCase {
 	protected void setUp() {
 		super.setUp();
 		
+                try {
+			client.delete(database.buildPath(COLLECTION_PATH + docCollection));
+		} catch (ArangoDb4JException e1) {
+		}		
+		
 		try {
 			database.createCollection(docCollection);
 		}
@@ -22,16 +27,16 @@ public class IndexTest extends BaseTestCase {
 	}
 
 	protected void tearDown() {
-		super.tearDown();
-		
 		try {
-			client.delete(COLLECTION_PATH + docCollection);
+			client.delete(database.buildPath(COLLECTION_PATH + docCollection));
 		} catch (ArangoDb4JException e1) {
 		}		
+		
+                super.tearDown();
 	}
 
 	
-	private int countIndexes(String collectionName) {
+	private int countIndexes() {
 		// read primary index
 		List<Index> listPrimary = null;
 		try {
@@ -47,12 +52,12 @@ public class IndexTest extends BaseTestCase {
 	
 	public void test_getIndexList () {
 		// count primary indexes
-		assertTrue(countIndexes(docCollection) > 0);
+		assertTrue(countIndexes() > 0);
 	}
 
 
 	public void test_createIndex () {
-		int countPrimary = countIndexes(docCollection);
+		int countPrimary = countIndexes();
 
 		List<String> indexFields = new ArrayList<String>();
 		indexFields.add("key1");
@@ -69,7 +74,7 @@ public class IndexTest extends BaseTestCase {
 		}
 		
 		assertNotNull(index.getId());
-		assertEquals(countPrimary+1, countIndexes(docCollection));		
+		assertEquals(countPrimary + 1, countIndexes());		
 	}
 
 	public void test_getPrimaryIndex () {
@@ -85,7 +90,7 @@ public class IndexTest extends BaseTestCase {
 	}
 
 	public void test_deleteIndex () {
-		int countPrimary = countIndexes(docCollection);
+		int countPrimary = countIndexes();
 		List<String> indexFields = new ArrayList<String>();
 		indexFields.add("key1");
 		
@@ -100,7 +105,7 @@ public class IndexTest extends BaseTestCase {
 		}
 		
 		assertNotNull(index.getId());
-		assertEquals(countPrimary+1, countIndexes(docCollection));
+		assertEquals(countPrimary+1, countIndexes());
 		
 		String id = index.getId();
 
@@ -109,7 +114,7 @@ public class IndexTest extends BaseTestCase {
 		} catch (ArangoDb4JException e) {
 		}
 		
-		assertEquals(countPrimary, countIndexes(docCollection));
+		assertEquals(countPrimary, countIndexes());
 	}
 	
 }

@@ -8,7 +8,9 @@ package org.arangodb.objectmapper;
 //
 //////////////////////////////////////////////////////////////////////////////////////////
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import org.arangodb.objectmapper.http.ArangoDbHttpClient;
@@ -19,6 +21,7 @@ import org.arangodb.objectmapper.http.RevisionResponse;
 import org.arangodb.objectmapper.jackson.ArangoDbDocument;
 import org.arangodb.objectmapper.jackson.JsonSerializer;
 import org.arangodb.objectmapper.util.ArangoDbAssert;
+import org.arangodb.objectmapper.ServerRole;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -40,7 +43,7 @@ public class Database {
 	 * Database name
 	 */
 
-        private String name;
+        private final String name;
 	
         /**
 	 * Database prefix
@@ -59,12 +62,24 @@ public class Database {
 	 */
 
 	public final static String VERSION_PATH = "/_api/version";
+	
+        /**
+	 * Path to server role api
+	 */
+
+	public final static String ROLE_PATH = "/_admin/server/role";
 
 	/**
 	 * Path to collection api
 	 */
 
 	public final static String COLLECTION_PATH = "/_api/collection";
+	
+        /**
+	 * Path to database api
+	 */
+
+	public final static String DATABASE_PATH = "/_api/database";
 
 	/**
 	 * Path to index api
@@ -94,11 +109,11 @@ public class Database {
 	 * @param client
 	 *            a http client connection
 	 */
-
+/*
 	public Database(ArangoDbHttpClient client) {
                 this(client, "");
 	}
-	
+*/	
         /**
 	 * Build a database-specific path
 	 * 
@@ -115,13 +130,23 @@ public class Database {
                 return DB_PREFIX + this.name + relPath;
         }
 
+        public String getName() {
+                return name;
+        }
+
+	public Map<String, Object> getAsMap() {
+		Map<String, Object> result = new HashMap<String, Object>();
+		
+		result.put("name", name);
+		return result;
+	}
+
 	/**
 	 * Request the version of ArangoDB
 	 * 
 	 * @return Version The version object number
 	 * 
 	 * @throws ArangoDb4JException
-	 *             on
 	 */
 
 	public Version getVersion() throws ArangoDb4JException {
@@ -133,6 +158,67 @@ public class Database {
 						Version.class);
 			}
 		});
+	}
+	
+        /**
+	 * Request the server role
+	 * 
+	 * @return String The server role as an enum value
+	 */
+
+	public ServerRole.roleEnum getServerRole() {
+                try {
+                    JsonNode root = rest.get(buildPath(ROLE_PATH), new ResponseCallback<JsonNode>() {
+                            @Override
+                            public JsonNode success(ArangoDbHttpResponse hr)
+                                            throws ArangoDb4JException {
+                                    return serializer.toJsonNode(hr.getContentAsStream());
+                            }
+                    });
+                
+                    if (root != null && root.has("result")) {
+  		        return ServerRole.fromString(root.get("result").asText());
+                    }
+                }
+                catch (Exception e) {
+                    // this might happen if the server API is too "old"
+                }
+
+                return ServerRole.roleEnum.UNKNOWN;
+	}
+
+        public static Database createDatabase (ArangoDbHttpClient client, String name) throws ArangoDb4JException {
+                Database db = new Database(client, name);
+                return db.createDatabase(db);
+        }
+	
+        public Database createDatabase (String name) throws ArangoDb4JException {
+		return createDatabase(new Database(this.rest.getClient(), name));
+	}
+
+	public Database createDatabase (Database db) throws ArangoDb4JException {
+		ArangoDbAssert.notNull(db, "given database is null");
+		
+		rest.post("/_db/_system" + DATABASE_PATH, serializer.toJson(db.getAsMap()),
+				new ResponseCallback<Integer>() {
+					@Override
+					public Integer success(ArangoDbHttpResponse hr)
+							throws ArangoDb4JException {
+						return null;
+					}
+				});
+
+		return db;
+	}
+        
+        public void deleteDatabase (String name) throws ArangoDb4JException {
+		final String path = "/_db/_system" + DATABASE_PATH + "/" + encodePart(name);
+		rest.delete(path);
+	}
+	
+        public void deleteDatabase (Database db) throws ArangoDb4JException {
+		ArangoDbAssert.notNull(db, "given database is null");
+                db.deleteDatabase(db.name);
 	}
 
 	// /////////////////////////////////////////////////////////////////////////
@@ -148,7 +234,6 @@ public class Database {
 	 *         is filled)
 	 * 
 	 * @throws ArangoDb4JException
-	 *             on
 	 */
 
 	public <T extends ArangoDbDocument> T createDocument(T o)
@@ -220,8 +305,7 @@ public class Database {
 	 *             on connection, database and unserialize errors 
 	 */
 
-	public <T extends ArangoDbDocument> T updateDocument(T o)
-			throws ArangoDb4JException {
+	public <T extends ArangoDbDocument> T updateDocument(T o) throws ArangoDb4JException {
 		return updateDocument(o, true);
         }
 	
@@ -318,8 +402,7 @@ public class Database {
 	 *             on connection, database and unserialize errors 
 	 */
 
-	public void deleteDocument(ArangoDbDocument o)
-			throws ArangoDb4JException  {
+	public void deleteDocument(ArangoDbDocument o) throws ArangoDb4JException  {
 		ArangoDbAssert.notNull(o, "given object is null");
 		
 		if (o.isNew()) {
@@ -532,11 +615,11 @@ public class Database {
 		deleteCollection(new Collection(c));
 	}
 	
-	public void deleteCollection (String name)  throws ArangoDb4JException {
+	public void deleteCollection (String name) throws ArangoDb4JException {
 		deleteCollection(new Collection(name));
 	}
 
-	public void deleteCollection (Collection coll)  throws ArangoDb4JException {
+	public void deleteCollection (Collection coll) throws ArangoDb4JException {
 		ArangoDbAssert.notNull(coll, "given collection is null");
 		String path = COLLECTION_PATH + "/" + encodePart(coll.getName());	
 		rest.delete(buildPath(path));
@@ -556,7 +639,7 @@ public class Database {
 	// /////////////////////////////////////////////////////////////////////////
 	
 	public static <T> String getCollectionName (final Class<T> c) {
-		return c.getName().replace('.', '-');
+		return c.getName().replace('.', '_');
 	}
 	
 	public JsonSerializer getSerializer() {

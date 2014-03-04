@@ -156,7 +156,6 @@ public class Cursor<T extends ArangoDbDocument> implements Iterator<T> {
      */
 
 	private boolean setValues (JsonNode root) {
-		
 		if (root == null) {
 			hasNext = false;
 			id = "";
@@ -227,7 +226,7 @@ public class Cursor<T extends ArangoDbDocument> implements Iterator<T> {
 	}
 
 	private JsonNode updateCursor (String id) throws ArangoDb4JException {
-		return database.getRestHandler().put(database.buildPath(CURSOR_PATH) + "/"+ id, "", 
+		return database.getRestHandler().put(database.buildPath(CURSOR_PATH) + "/" + id, "", 
 				new ResponseCallback<JsonNode>() {
 					@Override
 					public JsonNode success(ArangoDbHttpResponse hr)
