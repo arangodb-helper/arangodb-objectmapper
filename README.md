@@ -120,3 +120,11 @@ while (cursor.hasNext()) {
 	...
 }
 ```
+
+Creating databases and collections
+```
+ArangoDbHttpClient client = new ArangoDbHttpClient.Builder().host("localhost")
+                                                            .port(8529)
+                                                            .build();      
+Database db = Database.createDatabase(client, "MyDatabase"); 
+Collection coll = db.createCollection("MyCollection");

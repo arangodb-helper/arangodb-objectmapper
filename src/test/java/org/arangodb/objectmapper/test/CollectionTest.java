@@ -78,7 +78,6 @@ public class CollectionTest extends BaseTestCase {
                 assertNotNull(collection.getId());	
 		assertFalse(collection.getWaitForSync());
 		assertEquals(Collection.collType.DOCUMENT, collection.getType());
-		assertEquals((Integer) (32 * 1024 * 1024), collection.getJournalSize());
 		assertEquals(docCollection, collection.getName());
 		assertFalse(collection.getIsVolatile());
 		assertFalse(collection.getIsSystem());
