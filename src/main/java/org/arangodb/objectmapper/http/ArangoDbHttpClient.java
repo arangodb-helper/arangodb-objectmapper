@@ -26,6 +26,7 @@ import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.params.ClientPNames;
 import org.apache.http.conn.ClientConnectionManager;
+import org.apache.http.conn.ConnectionKeepAliveStrategy;
 import org.apache.http.conn.params.ConnRoutePNames;
 import org.apache.http.conn.scheme.PlainSocketFactory;
 import org.apache.http.conn.scheme.Scheme;
@@ -225,8 +226,10 @@ public class ArangoDbHttpClient {
 
 		boolean cleanupIdleConnections = true;
 		boolean useExpectContinue = false;
+		boolean staleConnectionCheck = false;
 		boolean caching = true;
 		boolean compression; // Default is false;
+		long keepAliveTimeout = 90;
 		int maxObjectSizeBytes = 8192;
 		int maxCacheEntries = 1000;
 
@@ -372,18 +375,26 @@ public class ArangoDbHttpClient {
 
 		public org.apache.http.client.HttpClient configureClient() throws ArangoDb4JException {
 			HttpParams params = new BasicHttpParams();
-			HttpProtocolParams.setUseExpectContinue(params, useExpectContinue);
-			HttpConnectionParams.setConnectionTimeout(params, connectionTimeout);
-			HttpConnectionParams.setSoTimeout(params, socketTimeout);
-			HttpConnectionParams.setTcpNoDelay(params, Boolean.TRUE);
+                        params.setParameter(HttpConnectionParams.STALE_CONNECTION_CHECK, staleConnectionCheck);
+                        params.setParameter(HttpProtocolParams.USE_EXPECT_CONTINUE, useExpectContinue);
+                        params.setParameter(HttpConnectionParams.CONNECTION_TIMEOUT, connectionTimeout);
+                        params.setParameter(HttpConnectionParams.SO_TIMEOUT, socketTimeout);
+                        params.setParameter(HttpConnectionParams.TCP_NODELAY, true);
+                        params.setParameter(HttpConnectionParams.SO_KEEPALIVE, false); // keep-alive on TCP level
 
-            String protocol = "http";
+                        ConnectionKeepAliveStrategy customKeepAliveStrategy = new ConnectionKeepAliveStrategy() {
+                          public long getKeepAliveDuration(org.apache.http.HttpResponse response, org.apache.http.protocol.HttpContext context) {
+                            return keepAliveTimeout * 1000;
+                          }
+                        };
+                        
+                        String protocol = "http";
 
-			if (enableSSL)
-                protocol = "https";
+                        if (enableSSL) {
+                          protocol = "https";
+                        }
 
-			params.setParameter(ClientPNames.DEFAULT_HOST, new HttpHost(host,
-					port, protocol));
+			params.setParameter(ClientPNames.DEFAULT_HOST, new HttpHost(host, port, protocol));
 			if (proxy != null) {
 				params.setParameter(ConnRoutePNames.DEFAULT_PROXY,
 						new HttpHost(proxy, proxyPort, protocol));
@@ -397,6 +408,7 @@ public class ArangoDbHttpClient {
 				client.addRequestInterceptor(
 						new PreemptiveAuthRequestInterceptor(), 0);
 			}
+                        client.setKeepAliveStrategy(customKeepAliveStrategy);
 			
 			if (compression) {
 				return new DecompressingHttpClient(client);
@@ -496,16 +508,18 @@ public class ArangoDbHttpClient {
 			return this;
 		}
 
-		/**
-		 * Activates 'Expect: 100-Continue' handshake with CouchDB.
-		 * Using expect continue can reduce stale connection problems for PUT / POST operations.
-		 * body. Enabled by default.
-		 * 
-		 * @param b
-		 * @return the builder
-		 */
 		public Builder useExpectContinue(boolean b) {
 			useExpectContinue = b;
+			return this;
+		}
+		
+                public Builder staleConnectionCheck(boolean b) {
+			staleConnectionCheck = b;
+			return this;
+		}
+                
+                public Builder keepAliveTimeout(long t) {
+		        keepAliveTimeout = t;
 			return this;
 		}
 
