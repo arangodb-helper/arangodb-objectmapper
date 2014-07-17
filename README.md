@@ -105,7 +105,7 @@ while (cursor.hasNext()) {
 
 Sort by key
 ```
-Cursor<Point> cursor = repo.getQuery().sort("X", PropertySort.Direction.DESCENDING).execute();
+Cursor<Point> cursor = repo.getQuery().sort("x", PropertySort.Direction.DESCENDING).execute();
 while (cursor.hasNext()) {
 	Point p = cursor.next();
 	...
@@ -114,7 +114,7 @@ while (cursor.hasNext()) {
 
 Windowing
 ```
-Cursor<Point> cursor = repo.getQuery().limit(11,10).sort("X", PropertySort.Direction.DESCENDING).execute();
+Cursor<Point> cursor = repo.getQuery().limit(11,10).sort("x", PropertySort.Direction.DESCENDING).execute();
 while (cursor.hasNext()) {
 	Point p = cursor.next();
 	...
