@@ -3,7 +3,7 @@
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 cd $DIR
 
-VERSION=2.1.1
+VERSION=2.2.2
 NAME=ArangoDB-$VERSION
 
 if [ ! -d "$DIR/$NAME" ]; then
@@ -19,11 +19,7 @@ PID=$(echo $PPID)
 TMP_DIR="/tmp/arangodb.$PID"
 PID_FILE="/tmp/arangodb.$PID.pid"
 ARANGODB_DIR="$DIR/$NAME"
-
-ARANGOD="${ARANGODB_DIR}/bin/arangod"
-if [ "$ARCH" == "x86_64" ]; then
-  ARANGOD="${ARANGOD}_x86_64"
-fi
+ARANGOD="${ARANGODB_DIR}/bin/arangod_x86_64"
 
 # create database directory
 mkdir ${TMP_DIR}
@@ -57,4 +53,3 @@ while [[ -z `curl -s 'http://127.0.0.1:8529/_api/version' ` ]] ; do
 done
 
 echo "ArangoDB is up"
-

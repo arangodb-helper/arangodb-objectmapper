@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.arangodb.objectmapper</groupId>
   <artifactId>arangodb-objectmapper</artifactId>
-  <version>1.0.5-SNAPSHOT</version>
+  <version>1.0.5</version>
   <name>ArangoDB object mapper for Java</name>
   <description>Java ODM for ArangoDB</description>
   <properties>
