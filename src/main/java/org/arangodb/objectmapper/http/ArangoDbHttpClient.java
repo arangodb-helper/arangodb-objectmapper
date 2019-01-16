@@ -2,9 +2,9 @@ package org.arangodb.objectmapper.http;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.charset.UnsupportedCharsetException;
 import java.util.Map;
 
 import javax.net.ssl.SSLContext;
@@ -42,9 +42,8 @@ import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 import org.apache.http.params.HttpProtocolParams;
-import org.apache.http.protocol.RequestExpectContinue;
-import org.arangodb.objectmapper.ArangoDb4JException;
 import org.apache.log4j.Logger;
+import org.arangodb.objectmapper.ArangoDb4JException;
 
 /**
  * Original file from "Java API for CouchDB http://www.ektorp.org"
@@ -161,7 +160,7 @@ public class ArangoDbHttpClient {
 		LOG.debug("Request-body: " + content);
 		try {
 			request.setEntity(new StringEntity(content, DEFAULT_CHARSET));
-		} catch (UnsupportedEncodingException e) {
+		} catch (UnsupportedCharsetException e) {
 			LOG.error(DEFAULT_CHARSET + " is not supported");
 		}
 		request.setHeader(new BasicHeader("Content-Type", MIME_TYPE_JSON));
