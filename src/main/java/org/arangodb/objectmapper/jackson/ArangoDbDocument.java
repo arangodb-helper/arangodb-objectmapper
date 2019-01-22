@@ -42,6 +42,12 @@ public class ArangoDbDocument implements Serializable {
 	 */
 	
 	private String _rev;
+	
+	/**
+	 * old revision
+	 */
+	private String _oldRev;
+		
 
 	@JsonProperty("_id")
 	public String getId() {
@@ -94,6 +100,15 @@ public class ArangoDbDocument implements Serializable {
 	@JsonIgnore	
 	public boolean isNew() {
 		return _rev == null;
+	}
+
+	@JsonProperty("_oldRev")
+	public String getOldRev() {
+		return _oldRev;
+	}
+
+	public void setOldRev(String oldRev) {
+		this._oldRev = oldRev;
 	}
 
 }

@@ -26,7 +26,6 @@ public class JsonSerializer {
 		
 		// std config:
 		this.objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, true);
-		this.objectMapper.getSerializationConfig().withSerializationInclusion(JsonInclude.Include.NON_NULL);		
 	}
 	
 	public String toJson(Object o) throws ArangoDb4JException {

@@ -13,6 +13,8 @@ public class Version {
 	private String version;
 	
 	private String server;
+	
+	private String license;
 
 	public String getVersion() {
 		return version;
@@ -28,6 +30,14 @@ public class Version {
 
 	public void setServer(String server) {
 		this.server = server;
+	}
+
+	public String getLicense() {
+		return license;
+	}
+
+	public void setLicense(String license) {
+		this.license = license;
 	}
 
 }
