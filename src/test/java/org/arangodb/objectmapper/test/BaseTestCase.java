@@ -49,7 +49,7 @@ public abstract class BaseTestCase extends TestCase {
 		try {
 			
 			ArangoDbHttpClient.Builder builder = new ArangoDbHttpClient.Builder();
-			client = builder.username("root").password("root").build();
+			client = builder.username("root").password("").build();
 			
 		} catch (ArangoDb4JException e1) {
 			e1.printStackTrace();
