@@ -162,6 +162,30 @@
 					</descriptorRefs>
 				</configuration>
 			</plugin>
+
+			<plugin>
+				<groupId>com.ragedunicorn.tools.maven</groupId>
+				<artifactId>github-release-maven-plugin</artifactId>
+				<version>1.0.0</version>
+				<executions>
+					<execution>
+						<id>default-cli</id>
+						<configuration>
+							<owner>arangodb-helper</owner>
+							<repository>arangodb-objectmapper</repository>
+							<server>github-oauth</server>
+							<tagName>${project.version}</tagName>
+							<assets>
+								<asset>target/arangodb-objectmapper-${project.version}.jar</asset>
+								<asset>target/arangodb-objectmapper-${project.version}-sources.jar</asset>
+								<asset>target/arangodb-objectmapper-${project.version}-jar-with-dependencies.jar</asset>
+								<asset>target/arangodb-objectmapper-${project.version}-distribution.zip</asset>
+							</assets>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
 		</plugins>
 	</build>
 	<reporting>
