@@ -105,9 +105,12 @@ public abstract class BaseTestCase extends TestCase {
 
 		try {
 
-			LOG.info("Try to load Properties from " + BaseTestCase.class.getResource("/arangodb.properties").getFile());
+			LOG.debug("Try to load Properties from " + BaseTestCase.class.getResource("/arangodb.properties").getFile());
+			
 			InputStream resourceAsStream = BaseTestCase.class.getResourceAsStream("/arangodb.properties");
 			props.load(resourceAsStream);
+			
+			LOG.info("Load" + props.size() +" Properties from " + BaseTestCase.class.getResource("/arangodb.properties").getFile());
 
 		} catch (Exception e) {
 
