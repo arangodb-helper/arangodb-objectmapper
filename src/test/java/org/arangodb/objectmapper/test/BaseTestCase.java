@@ -110,8 +110,10 @@ public abstract class BaseTestCase extends TestCase {
 			InputStream resourceAsStream = BaseTestCase.class.getResourceAsStream("/arangodb.properties");
 			props.load(resourceAsStream);
 			
-			LOG.info("Load" + props.size() +" Properties from " + BaseTestCase.class.getResource("/arangodb.properties").getFile());
-
+			LOG.info(props.toString());
+			
+			LOG.info("Load " + props.size() +" Properties from " + BaseTestCase.class.getResource("/arangodb.properties").getFile());
+			
 		} catch (Exception e) {
 
 			LOG.warn("Cant read Properties from File", e);
