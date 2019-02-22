@@ -125,8 +125,7 @@ public abstract class BaseTestCase extends TestCase {
 				}
 				
 			});
-			
-			
+
 		} catch (Exception e) {
 			LOG.warn("Cant read Properties from File", e);
 		}
