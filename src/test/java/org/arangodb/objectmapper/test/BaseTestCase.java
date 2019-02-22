@@ -3,6 +3,7 @@ package org.arangodb.objectmapper.test;
 import java.io.InputStream;
 import java.util.Properties;
 
+import org.apache.commons.codec.binary.StringUtils;
 import org.apache.log4j.Logger;
 import org.arangodb.objectmapper.ArangoDb4JException;
 import org.arangodb.objectmapper.Database;
@@ -110,12 +111,22 @@ public abstract class BaseTestCase extends TestCase {
 			InputStream resourceAsStream = BaseTestCase.class.getResourceAsStream("/arangodb.properties");
 			props.load(resourceAsStream);
 			
-			LOG.info("Load " + props.size() +" Properties from " + BaseTestCase.class.getResource("/arangodb.properties").getFile());
+			LOG.debug("Load " + props.size() +" Properties from " + BaseTestCase.class.getResource("/arangodb.properties").getFile());
+			
+			props.forEach((key, val) -> {
+				
+				String systemProp = System.getProperty(key.toString());
+				
+				if(systemProp != null && systemProp.equals(val) == false) {
+					LOG.info("Found System Property for " + key + " with Value " + systemProp);
+					props.put(key, systemProp);
+				}
+				
+			});
+			
 			
 		} catch (Exception e) {
-
 			LOG.warn("Cant read Properties from File", e);
-
 		}
 
 		return props;
