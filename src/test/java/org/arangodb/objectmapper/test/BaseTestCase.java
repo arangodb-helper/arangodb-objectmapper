@@ -115,7 +115,7 @@ public abstract class BaseTestCase extends TestCase {
 			
 			props.forEach((key, val) -> {
 				
-				String systemProp = System.getProperty(key.toString());
+				String systemProp = System.getProperty(key.toString().replace(".", "_"));
 				
 				if(systemProp != null && systemProp.equals(val) == false) {
 					LOG.info("Found System Property for " + key + " with Value " + systemProp);
