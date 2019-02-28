@@ -113,21 +113,15 @@ public abstract class BaseTestCase extends TestCase {
 			
 			LOG.info("Load " + props.size() +" Properties from " + BaseTestCase.class.getResource("/arangodb.properties").getFile());
 			
-			System.getProperties().forEach((key, value) -> {
-				LOG.info(key + " - " + value);
-			});
-			
 			props.forEach((key, val) -> {
 				
-				String systemPropName = key.toString().replace(".", "_");
-				LOG.info("Check Env " + systemPropName + " for override of " + key);
-				String systemProp = System.getProperty(systemPropName);
+				String systemEnvName = key.toString().replace(".", "_");
+				LOG.info("Check Env " + systemEnvName + " for override of " + key);
+				String systemEnv = System.getenv(systemEnvName);
 				
-				
-				
-				if(systemProp != null) {
-					LOG.info("Found System Property for " + key + " with Value " + systemProp);
-					props.put(key, systemProp);
+				if(systemEnv != null) {
+					LOG.info("Found System Property for " + key + " with Value " + systemEnv);
+					props.put(key, systemEnv);
 				}
 				
 			});
