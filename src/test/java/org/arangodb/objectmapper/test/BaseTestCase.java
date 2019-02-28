@@ -115,9 +115,11 @@ public abstract class BaseTestCase extends TestCase {
 			
 			props.forEach((key, val) -> {
 				
-				String systemProp = System.getProperty(key.toString().replace(".", "_"));
+				String systemPropName = key.toString().replace(".", "_");
+				LOG.debug("Check Env " + systemPropName + " for override of " + key);
+				String systemProp = System.getProperty(systemPropName);
 				
-				if(systemProp != null && systemProp.equals(val) == false) {
+				if(systemProp != null) {
 					LOG.info("Found System Property for " + key + " with Value " + systemProp);
 					props.put(key, systemProp);
 				}
