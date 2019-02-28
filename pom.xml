@@ -174,7 +174,7 @@
 							<owner>arangodb-helper</owner>
 							<repository>arangodb-objectmapper</repository>
 							<server>github-oauth</server>
-							<tagName>${project.version}</tagName>
+							<tagName>v${project.version}</tagName>
 							<assets>
 								<asset>target/arangodb-objectmapper-${project.version}.jar</asset>
 								<asset>target/arangodb-objectmapper-${project.version}-sources.jar</asset>
