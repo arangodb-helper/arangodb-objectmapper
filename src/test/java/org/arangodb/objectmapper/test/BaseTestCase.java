@@ -111,16 +111,16 @@ public abstract class BaseTestCase extends TestCase {
 			InputStream resourceAsStream = BaseTestCase.class.getResourceAsStream("/arangodb.properties");
 			props.load(resourceAsStream);
 			
-			LOG.info("Load " + props.size() +" Properties from " + BaseTestCase.class.getResource("/arangodb.properties").getFile());
+			LOG.debug("Load " + props.size() +" Properties from " + BaseTestCase.class.getResource("/arangodb.properties").getFile());
 			
 			props.forEach((key, val) -> {
 				
 				String systemEnvName = key.toString().replace(".", "_");
-				LOG.info("Check Env " + systemEnvName + " for override of " + key);
+				LOG.debug("Check Env " + systemEnvName + " for override of " + key);
 				String systemEnv = System.getenv(systemEnvName);
 				
 				if(systemEnv != null) {
-					LOG.info("Found System Property for " + key + " with Value " + systemEnv);
+					LOG.info("Found Env Property for " + key + " with Value " + systemEnv);
 					props.put(key, systemEnv);
 				}
 				
