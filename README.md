@@ -1,9 +1,7 @@
-![ArangoDB-Logo](https://www.arangodb.org/wp-content/uploads/2012/10/logo_arangodb_transp.png)
+![ArangoDB-Logo](https://docs.arangodb.com/assets/arangodb_logo_2016_inverted.png)
 
 arangodb object mapper
 =========================
-
-[![Build Status](https://secure.travis-ci.org/triAGENS/arangodb-objectmapper.png)](http://travis-ci.org/triAGENS/arangodb-objectmapper)
 
 A simple object mapper (based on [Jackson](http://wiki.fasterxml.com/JacksonHome)) to store java objects into a ArangoDB database.
 
@@ -12,7 +10,7 @@ Installation & Testing
 =======================
 
 Please check the
-[ArangoDB Installation Manual](http://www.arangodb.org/manuals/current/InstallManual.html)
+[ArangoDB Documentation](https://www.arangodb.com/documentation/)
 for installation and compilation instructions.
 
 Start ArangoDB on localhost port 8529.
