@@ -4,7 +4,7 @@
 
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>org.arangodb.objectmapper</groupId>
+	<groupId>org.arangodb</groupId>
 	<artifactId>arangodb-objectmapper</artifactId>
 	<version>2.0.11-SNAPSHOT</version>
 
