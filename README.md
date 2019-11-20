@@ -1,3 +1,5 @@
+[DEPRECATED]: This project is no longer maintained
+
 ![ArangoDB-Logo](https://docs.arangodb.com/assets/arangodb_logo_2016_inverted.png)
 
 arangodb object mapper
